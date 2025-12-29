@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="app.css">
+<link rel="icon" href="neww.PNG">
+<title>Typing Speed Test - Intro + Game</title>
+</head>
+<body>
+    <!-- Intro Page -->
+    <div class="intro" id="introPage">
+        <h1>Welcome to the Typing Speed Test</h1>
+        <p>Test your typing speed, sentence by sentence. Stay focused, and see how fast you can go!</p>
+        <button class="btn" id="startBtn">Start Test</button>
+    </div>
+
+    <!-- Typing Test Page -->
+    <div class="container" id="testPage">
+        <div class="timer" id="timer">0:00</div>
+        <div id="paragraph"></div>
+        <input type="text" id="inputField" placeholder="Start typing here..." autocomplete="off">
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2>Time Taken</h2>
+            <p id="timeTaken">0:00</p>
+            <p><b>Last Record:</b> <span id="lastRecord">--</span></p>
+            <button id="saveRecordBtn">Save Record</button>
+            <button id="tryAgainBtn">Try Again</button>
+        </div>
+    </div>
+
+<script src="app.js"></script>
+</body>
+</html>

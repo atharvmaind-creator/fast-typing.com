@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" href="neww.PNG">
+<title>Typing Speed Test - Intro + Game</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        position: relative;
+    }
+
+    body::before {
+        content: "";
+        position: absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(255,255,255,0.6);
+        z-index: -1;
+    }
+
+    .container, .intro {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        max-width: 800px;
+        width: 90%;
+        text-align: center;
+        display: none;
+    }
+
+    .intro {
+        display: block;
+    }
+
+    h1 {
+        color: #2e7d32;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 18px;
+        color: #444;
+    }
+
+    .btn {
+        padding: 14px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        background: #4caf50;
+        color: #fff;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        background: #388e3c;
+        transform: scale(1.08);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .timer {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    #paragraph {
+        font-size: 20px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        user-select: none;
+        color: #333;
+    }
+
+    #inputField {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: 1px solid #a3d9a5;
+        outline: none;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        font-weight: bold; 
+        color: #000; 
+        transition: all 0.3s ease;
+    }
+
+    #inputField:focus {
+        border-color: #4caf50;
+        box-shadow: 0 0 8px rgba(76,175,80,0.5);
+    }
+
+    .letter { color: #b3a9a9; font-weight: bold; }
+    .correct { color: #111211; font-weight: bold; }
+    .wrong { color: #dc1313; font-weight: bold; }
+
+    .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1000; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0,0,0,0.5); 
+        justify-content: center; 
+        align-items: center; 
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    .modal-content {
+        background-color: #f0fff0;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        color: #2e7d32;
+        transform: scale(0);
+        animation: popUp 0.3s ease forwards;
+    }
+
+    .modal button {
+        padding: 12px 25px;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        background-color: #4caf50;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .modal button:hover {
+        background-color: #388e3c;
+        transform: scale(1.08);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    @keyframes popUp {
+        0% { transform: scale(0); opacity: 0; }
+        70% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+</head>
+ 
+<body>
+    <!-- Intro Page -->
+    <div class="intro" id="introPage">
+        <h1>Welcome to the Typing Speed Test</h1>
+        <p>Test your typing speed, sentence by sentence. Stay focused, and see how fast you can go!</p>
+        <button class="btn" id="startBtn">Start Test</button>
+    </div>
+
+    <!-- Typing Test Page -->
+    <div class="container" id="testPage">
+        <div class="timer" id="timer">0:00</div>
+        <div id="paragraph"></div>
+        <input type="text" id="inputField" placeholder="Start typing here..." autocomplete="off">
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2>Time Taken</h2>
+            <p id="timeTaken">0:00</p>
+            <p><b>Last Record:</b> <span id="lastRecord">--</span></p>
+            <button id="saveRecordBtn">Save Record</button>
+            <button id="tryAgainBtn">Try Again</button>
+        </div>
+    </div>
+
+<script>
+    const sentences = [
+    "Quantum computing leverages principles like superposition and entanglement to perform complex calculations.",
+    "Modern cryptographic techniques are essential for securing data against unauthorized access.",
+    "The Internet of Things connects everyday devices, enabling them to act on data with minimal intervention.",
+    "5G network technology promises lower latency and faster speeds for billions of devices.",
+    "Cloud computing platforms provide on-demand access to computing power and storage."
+];
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+shuffleArray(sentences);
+
+let currentSentence = 0;
+let letters = [];
+let timer;
+let time = 0;
+let started = false;
+let lastRecord = "--";
+
+const introPage = document.getElementById('introPage');
+const testPage = document.getElementById('testPage');
+const startBtn = document.getElementById('startBtn');
+const paragraphDiv = document.getElementById('paragraph');
+const inputField = document.getElementById('inputField');
+const timerDiv = document.getElementById('timer');
+const modal = document.getElementById('resultModal');
+const timeTaken = document.getElementById('timeTaken');
+const tryAgainBtn = document.getElementById('tryAgainBtn');
+const saveRecordBtn = document.getElementById('saveRecordBtn');
+const lastRecordSpan = document.getElementById('lastRecord');
+
+function loadSentence() {
+    const sentence = sentences[currentSentence];
+    paragraphDiv.innerHTML = sentence.split('').map(c => `<span class="letter">${c}</span>`).join('');
+    letters = document.querySelectorAll('.letter');
+    inputField.value = '';
+    time = 0;
+    started = false;
+    timerDiv.textContent = '0:00';
+    clearInterval(timer);
+}
+
+function startTimer() {
+    timer = setInterval(() => {
+        time++;
+        const minutes = Math.floor(time/60);
+        const seconds = time % 60;
+        timerDiv.textContent = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+    }, 1000);
+}
+
+inputField.addEventListener('input', () => {
+    const input = inputField.value.split('');
+    if(!started && input.length > 0) {
+        startTimer();
+        started = true;
+    }
+
+    let correct = true;
+    letters.forEach((letter, index) => {
+        if(input[index] == null) {
+            letter.className = 'letter';
+            correct = false;
+        } else if(input[index] === letter.textContent) {
+            letter.className = 'letter correct';
+        } else {
+            letter.className = 'letter wrong';
+            correct = false;
+        }
+    });
+
+    if(correct && input.length === letters.length) {
+        clearInterval(timer);
+        timeTaken.textContent = timerDiv.textContent;
+        lastRecordSpan.textContent = lastRecord;
+        modal.style.display = 'flex';
+    }
+});
+
+saveRecordBtn.addEventListener('click', () => {
+    lastRecord = timeTaken.textContent;
+    lastRecordSpan.textContent = lastRecord;
+    alert("Record Saved!");
+});
+
+tryAgainBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    currentSentence++;
+    if(currentSentence < sentences.length) {
+        loadSentence();
+    } else {
+        alert("All sentences completed!");
+    }
+});
+
+startBtn.addEventListener('click', () => {
+    introPage.style.display = 'none';
+    testPage.style.display = 'block';
+    loadSentence();
+});
+</script>
+</body>
+</html>
